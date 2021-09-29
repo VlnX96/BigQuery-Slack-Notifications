@@ -20,7 +20,7 @@ function chooseDate() {
 };
 
 cron.schedule('* * * * * ', () => {
-  console.log('analytics sent!');
+  console.log('analytics sent!!!!!');
   queryStackOverflow();
 });
 
@@ -52,7 +52,7 @@ LIMIT 100;`;
 
   const url = 'https://slack.com/api/chat.postMessage';
   const res = await axios.post(url, {
-    channel: 'test-slack-messages',
+    channel: 'test-channel-2',
     blocks: [
       {
         type: 'header',
@@ -97,8 +97,8 @@ LIMIT 100;`;
       }
     }
   ],
-    username: ' ͟ ͟A͟u͟t͟o͟-͟K͟e͟y͟ ͟A͟n͟a͟l͟y͟t͟i͟c͟s͟',
-    icon_emoji: ':dizzy:'
+    username: ' ͟ ͟A͟u͟t͟o͟-͟K͟e͟y͟ ͟M͟e͟t͟r͟i͟c͟s͟͟',
+    icon_emoji: ':metrics:'
   }, { headers: { authorization: `Bearer ${slackToken}` } });
 };
 
