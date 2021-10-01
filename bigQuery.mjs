@@ -85,7 +85,7 @@ LIMIT 100;`;
         type: 'header',
         text: {
           type: 'plain_text',
-          text: 'Yesterday\'s key analytics:'
+          text: 'Yesterday\'s key metrics:'
         }
       },
     {
