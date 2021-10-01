@@ -5,18 +5,45 @@ import token from './slackToken.mjs'
 
 let date = new Date();
 let day = (date.getDate());
-let month = (date.getUTCMonth() + 1);
-let year = (date.getFullYear());
-let yesterdaysDate = `${year}0${month}${day - 1}`;
-let yesterdaysDate2 = `${year}${month}${day - 1}`;
+let dateString = new Date(date-86400000).toUTCString();
+let day2 = (dateString.charAt(5)+dateString.charAt(6));
+let month = (date.getMonth() + 1);
+let year = (dateString.charAt(12)+dateString.charAt(13)+dateString.charAt(14)+dateString.charAt(15));
+let yesterdaysDate = `${year}0${month}${day2}`;
+let yesterdaysDate2 = `${year}${month}${day2}`;
+let yesterdaysDate3 = `${year}0${month - 1}${day2}`;
+let yesterdaysDate4 = `${year}${month - 1}${day2}`;
 
-function chooseDate() {
+// chooses a "yesterdaysDate" variable based on the given month
+function pickdate() {
   if (month < 10) {
     var sqlDate = yesterdaysDate
   } else {
     var sqlDate = yesterdaysDate2
   }
   return sqlDate;
+};
+
+// created to account for an edge case I noticed
+function pickdate2() {
+  if ((month = 10) && (day = 1)) {
+    var sqlDate2 = yesterdaysDate3
+  } else if (month < 10) { 
+    var sqlDate2 = yesterdaysDate3;
+  } else {
+    var sqlDate2 = yesterdaysDate4;
+  }
+  return sqlDate2;
+};
+
+// chooses a "pickDate" based on whether it is the first calendar day of a given month or not
+function constructDate() {
+  if (day != 1) {
+   var sqlDate3 = pickdate();
+  } else {
+    var sqlDate3 = pickdate2();
+  }
+  return sqlDate3
 };
 
 cron.schedule('* * * * * ', () => {
@@ -33,7 +60,7 @@ SUM(CASE WHEN event_name = 'first_open' then 1 else 0 end ) AS first_open,
 SUM(CASE WHEN event_name = 'result_found' then 1 else 0 end ) AS result_found,
 SUM(CASE WHEN event_name = 'account_created' then 1 else 0 end ) AS account_created,
 SUM(CASE WHEN event_name = 'session_start' then 1 else 0 end ) AS session_start,
-FROM \`auto-key-mobile.analytics_270509349.events_${chooseDate()}\`
+FROM \`auto-key-mobile.analytics_270509349.events_${constructDate()}\`
 LIMIT 100;`;
 
   const noResult = {
