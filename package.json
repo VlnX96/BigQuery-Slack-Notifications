@@ -19,6 +19,9 @@
   "dependencies": {
     "@google-cloud/bigquery": "^5.9.0",
     "axios": "^0.21.4",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
     "node-cron": "^3.0.0"
   }
 }
