@@ -57,7 +57,7 @@ cron.schedule('0 12 * * * ', () => {
 async function queryBigQuery() {
 
   const bigqueryClient = new BigQuery();
-  const noResultQuery = `SELECT
+  const firebaseQuery = `SELECT
 SUM(CASE WHEN event_name = 'no_result' then 1 else 0 end ) AS no_result,
 SUM(CASE WHEN event_name = 'first_open' then 1 else 0 end ) AS first_open,
 SUM(CASE WHEN event_name = 'result_found' then 1 else 0 end ) AS result_found,
@@ -66,12 +66,12 @@ SUM(CASE WHEN event_name = 'session_start' then 1 else 0 end ) AS session_start,
 FROM \`auto-key-mobile.analytics_270509349.events_${constructDate()}\`
 LIMIT 100;`;
 
-  const noResult = {
-    query: noResultQuery,
+  const queryResults = {
+    query: firebaseQuery,
     location: 'US',
   };
 
-  const [rows] = await bigqueryClient.query(noResult);
+  const [rows] = await bigqueryClient.query(queryResults);
   let noResultCount = rows[0].no_result;
   let firstOpenCount = rows[0].first_open;
   let resultFoundCount = rows[0].result_found;
