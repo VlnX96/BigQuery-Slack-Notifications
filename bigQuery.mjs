@@ -5,14 +5,15 @@ import token from './slackToken.mjs'
 
 let date = new Date();
 let day = (date.getDate());
-let dateString = new Date(date-86400000).toUTCString();
-let day2 = (dateString.charAt(5)+dateString.charAt(6));
+let dateString = new Date(date - 86400000).toUTCString();
+let day2 = (dateString.charAt(5) + dateString.charAt(6));
 let month = (date.getMonth() + 1);
-let year = (dateString.charAt(12)+dateString.charAt(13)+dateString.charAt(14)+dateString.charAt(15));
+let year = (dateString.charAt(12) + dateString.charAt(13) + dateString.charAt(14) + dateString.charAt(15));
 let yesterdaysDate = `${year}0${month}${day2}`;
 let yesterdaysDate2 = `${year}${month}${day2}`;
 let yesterdaysDate3 = `${year}0${month - 1}${day2}`;
 let yesterdaysDate4 = `${year}${month - 1}${day2}`;
+let newYearsEve = `${year - 1}1231`;
 
 // chooses a "yesterdaysDate" variable based on the given month
 function pickdate() {
@@ -24,12 +25,12 @@ function pickdate() {
   return sqlDate;
 };
 
-// created to account for an edge case I noticed
+// created to account for first days of the month
 function pickdate2() {
-  if ((month = 10) && (day = 1)) {
+  if (month - 1 == 0) {
+    var sqlDate2 = newYearsEve
+  } else if (month <= 10 && month != 1) {
     var sqlDate2 = yesterdaysDate3
-  } else if (month < 10) { 
-    var sqlDate2 = yesterdaysDate3;
   } else {
     var sqlDate2 = yesterdaysDate4;
   }
@@ -39,19 +40,21 @@ function pickdate2() {
 // chooses a "pickDate" based on whether it is the first calendar day of a given month or not
 function constructDate() {
   if (day != 1) {
-   var sqlDate3 = pickdate();
+    var sqlDate3 = pickdate();
   } else {
     var sqlDate3 = pickdate2();
   }
   return sqlDate3
 };
 
-cron.schedule('* * * * * ', () => {
+cron.schedule('0 12 * * * ', () => {
   console.log('analytics sent!!!!!');
-  queryStackOverflow();
+  queryBigQuery().then(setTimeout((function () {
+    return process.exit();
+  }), 5000));
 });
 
-async function queryStackOverflow() {
+async function queryBigQuery() {
 
   const bigqueryClient = new BigQuery();
   const noResultQuery = `SELECT
@@ -85,47 +88,46 @@ LIMIT 100;`;
         type: 'header',
         text: {
           type: 'plain_text',
-          text: 'Yesterday\'s key metrics:'
+          text: 'Yesterday\'\s key metrics:'
         }
       },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*First Opens* : *${firstOpenCount}*`
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*First Opens* : *${firstOpenCount}*`
+        }
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Sessions Started* : *${sessionStartCount}*`
+        }
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Accounts Created* : *${accountCreatedCount}*`
+        }
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Results Found* : *${resultFoundCount}*`
+        }
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*No Results* : *${noResultCount}*`
+        }
       }
-    },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*Sessions Started* : *${sessionStartCount}*`
-      }
-    },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*Accounts Created* : *${accountCreatedCount}*`
-      }
-    },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*Results Found* : *${resultFoundCount}*`
-      }
-    },
-    {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `*No Results* : *${noResultCount}*`
-      }
-    }
-  ],
+    ],
     username: ' ͟ ͟A͟u͟t͟o͟-͟K͟e͟y͟ ͟M͟e͟t͟r͟i͟c͟s͟͟',
     icon_emoji: ':metrics:'
   }, { headers: { authorization: `Bearer ${slackToken}` } });
 };
-
