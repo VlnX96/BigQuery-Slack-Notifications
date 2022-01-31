@@ -1,4 +1,7 @@
 .env
+AuthKey.p8
+apiKeyId.mjs
+issuerId.mjs
 node_modules/
 slackToken.mjs
 misc.txt

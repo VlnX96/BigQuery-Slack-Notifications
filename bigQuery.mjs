@@ -47,12 +47,12 @@ function constructDate() {
   return sqlDate3
 };
 
-cron.schedule('0 12 * * * ', () => {
-  console.log('analytics sent!!!!!');
-  queryBigQuery().then(setTimeout((function () {
-    return process.exit();
-  }), 5000));
-});
+// cron.schedule('0 12 * * * ', () => {
+//   console.log('analytics sent!!!!!');
+//   queryBigQuery().then(setTimeout((function () {
+//     return process.exit();
+//   }), 5000));
+// });
 
 async function queryBigQuery() {
 
@@ -63,7 +63,7 @@ SUM(CASE WHEN event_name = 'first_open' then 1 else 0 end ) AS first_open,
 SUM(CASE WHEN event_name = 'result_found' then 1 else 0 end ) AS result_found,
 SUM(CASE WHEN event_name = 'account_created' then 1 else 0 end ) AS account_created,
 SUM(CASE WHEN event_name = 'session_start' then 1 else 0 end ) AS session_start,
-FROM \`auto-key-mobile.analytics_270509349.events_${constructDate()}\`
+FROM \`auto-key-mobile.analytics_270509349.events_20210902\`
 LIMIT 100;`;
 
   const queryResults = {
@@ -131,3 +131,5 @@ LIMIT 100;`;
     icon_emoji: ':metrics:'
   }, { headers: { authorization: `Bearer ${slackToken}` } });
 };
+
+queryBigQuery();
